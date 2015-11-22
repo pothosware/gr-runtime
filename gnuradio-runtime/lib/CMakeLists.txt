@@ -191,6 +191,12 @@ endif()
 message(STATUS "")
 message(STATUS "")
 
+#causes registered components to list pothos
+GR_REGISTER_COMPONENT("pothos-support" ENABLE_POTHOS_SUPPORT
+  Pothos_FOUND
+  ENABLE_GNURADIO_RUNTIME
+)
+
 ########################################################################
 # Add DLL resource file when using MSVC
 ########################################################################
