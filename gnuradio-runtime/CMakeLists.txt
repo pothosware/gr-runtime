@@ -122,51 +122,53 @@ CPACK_COMPONENT("runtime_swig"
     DESCRIPTION  "SWIG development .i files"
     DEPENDS      "runtime_swig;runtime_python;runtime_devel"
 )
-configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/gnuradio-runtime.conf.in
-    ${CMAKE_CURRENT_BINARY_DIR}/gnuradio-runtime.conf
-@ONLY)
+#configure_file(
+    #${CMAKE_CURRENT_SOURCE_DIR}/gnuradio-runtime.conf.in
+    #${CMAKE_CURRENT_BINARY_DIR}/gnuradio-runtime.conf
+#@ONLY)
 
-install(
-    FILES ${CMAKE_CURRENT_BINARY_DIR}/gnuradio-runtime.conf
-    DESTINATION ${GR_PREFSDIR}
-    COMPONENT "runtime_runtime"
-)
+#install(
+    #FILES ${CMAKE_CURRENT_BINARY_DIR}/gnuradio-runtime.conf
+    #DESTINATION ${GR_PREFSDIR}
+    #COMPONENT "runtime_runtime"
+#)
 
-if(ENABLE_GR_LOG AND HAVE_LOG4CPP)
-install(FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/gr_log_default.conf
-    DESTINATION ${GR_PREFSDIR}
-    COMPONENT "runtime_runtime"
-)
-endif(ENABLE_GR_LOG AND HAVE_LOG4CPP)
+#if(ENABLE_GR_LOG AND HAVE_LOG4CPP)
+#install(FILES
+    #${CMAKE_CURRENT_SOURCE_DIR}/gr_log_default.conf
+    #DESTINATION ${GR_PREFSDIR}
+    #COMPONENT "runtime_runtime"
+#)
+#endif(ENABLE_GR_LOG AND HAVE_LOG4CPP)
 
 ########################################################################
 # Add subdirectories
 ########################################################################
-add_subdirectory(include)
+#add_subdirectory(include)
+#add_subdirectory(lib)
+#add_subdirectory(apps)
+##add_subdirectory(doc)
+#if(ENABLE_PYTHON)
+     #add_subdirectory(swig)
+     #add_subdirectory(python)
+##    add_subdirectory(grc)
+    #add_subdirectory(examples)
+#endif(ENABLE_PYTHON)
+
 add_subdirectory(lib)
-add_subdirectory(apps)
-#add_subdirectory(doc)
-if(ENABLE_PYTHON)
-     add_subdirectory(swig)
-     add_subdirectory(python)
-#    add_subdirectory(grc)
-    add_subdirectory(examples)
-endif(ENABLE_PYTHON)
 
 ########################################################################
 # Create Pkg Config File
 ########################################################################
-configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/gnuradio-runtime.pc.in
-    ${CMAKE_CURRENT_BINARY_DIR}/gnuradio-runtime.pc
-@ONLY)
+#configure_file(
+    #${CMAKE_CURRENT_SOURCE_DIR}/gnuradio-runtime.pc.in
+    #${CMAKE_CURRENT_BINARY_DIR}/gnuradio-runtime.pc
+#@ONLY)
 
-install(
-    FILES ${CMAKE_CURRENT_BINARY_DIR}/gnuradio-runtime.pc
-    DESTINATION ${GR_LIBRARY_DIR}/pkgconfig
-    COMPONENT "runtime_devel"
-)
+#install(
+    #FILES ${CMAKE_CURRENT_BINARY_DIR}/gnuradio-runtime.pc
+    #DESTINATION ${GR_LIBRARY_DIR}/pkgconfig
+    #COMPONENT "runtime_devel"
+#)
 
 endif(ENABLE_GNURADIO_RUNTIME)

@@ -41,11 +41,11 @@ add_custom_command(
         ${PMT_SERIAL_TAGS_H}
 )
 
-install(
-    FILES ${PMT_SERIAL_TAGS_H}
-    DESTINATION ${GR_INCLUDE_DIR}/pmt
-    COMPONENT "runtime_devel"
-)
+#install(
+    #FILES ${PMT_SERIAL_TAGS_H}
+    #DESTINATION ${GR_INCLUDE_DIR}/pmt
+    #COMPONENT "runtime_devel"
+#)
 
 include(AddFileDependencies)
 ADD_FILE_DEPENDENCIES(
@@ -108,7 +108,7 @@ endif(MSVC)
 add_library(gnuradio-pmt SHARED ${pmt_sources})
 target_link_libraries(gnuradio-pmt ${gnuradio_pmt_libs})
 
-GR_LIBRARY_FOO(gnuradio-pmt RUNTIME_COMPONENT "runtime_runtime" DEVEL_COMPONENT "runtime_devel")
+#GR_LIBRARY_FOO(gnuradio-pmt RUNTIME_COMPONENT "runtime_runtime" DEVEL_COMPONENT "runtime_devel")
 
 add_dependencies(gnuradio-pmt
   pmt_generated

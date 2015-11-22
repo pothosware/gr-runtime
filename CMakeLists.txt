@@ -26,7 +26,7 @@ endif(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
 # Project setup
 ########################################################################
 cmake_minimum_required(VERSION 2.6)
-project(gnuradio CXX C)
+project(GrRuntime CXX C)
 enable_testing()
 
 #make sure our local CMake Modules path comes first
@@ -229,230 +229,22 @@ add_custom_target(uninstall
 include(GrBoost)
 
 ########################################################################
-# Enable python component
-########################################################################
-find_package(PythonLibs 2)
-find_package(SWIG)
-
-if(SWIG_FOUND)
-    # Minimum SWIG version required is 1.3.31
-    set(SWIG_VERSION_CHECK FALSE)
-    if("${SWIG_VERSION}" VERSION_GREATER "1.3.30")
-        set(SWIG_VERSION_CHECK TRUE)
-    endif()
-endif(SWIG_FOUND)
-
-include(GrComponent)
-GR_REGISTER_COMPONENT("python-support" ENABLE_PYTHON
-    PYTHONLIBS_FOUND
-    SWIG_FOUND
-    SWIG_VERSION_CHECK
-)
-
-find_package(CppUnit)
-GR_REGISTER_COMPONENT("testing-support" ENABLE_TESTING
-    CPPUNIT_FOUND
-)
-
-########################################################################
-# Add optional dlls specified in DLL_PATHS
-########################################################################
-foreach(path ${DLL_PATHS})
-    file(GLOB _dlls "${path}/*.dll")
-    list(APPEND ALL_DLL_FILES ${_dlls})
-endforeach(path)
-if(DEFINED ALL_DLL_FILES)
-    include(GrPackage)
-    CPACK_COMPONENT("extra_dlls"
-        DISPLAY_NAME "Extra DLLs"
-        DESCRIPTION  "Extra DLLs for runtime dependency requirements"
-    )
-    message(STATUS "")
-    message(STATUS "Including the following dlls into the install:")
-    foreach(_dll ${ALL_DLL_FILES})
-        message(STATUS "  ${_dll}")
-    endforeach(_dll)
-    install(FILES ${ALL_DLL_FILES} DESTINATION ${GR_RUNTIME_DIR} COMPONENT "extra_dlls")
-endif()
-
-########################################################################
 # Setup volk as a subproject
 ########################################################################
 message(STATUS "")
 message(STATUS "Configuring VOLK support...")
 
-OPTION(ENABLE_INTERNAL_VOLK "Enable internal VOLK only" ON)
-unset(VOLK_FOUND)
-if(NOT ENABLE_INTERNAL_VOLK)
-    find_package(Volk)
-    if(NOT VOLK_FOUND)
-        message(STATUS "  External VOLK not found; checking internal.")
-    endif()
-endif()
-if(NOT VOLK_FOUND)
-    find_file(INTREE_VOLK_FOUND
-        volk/volk_common.h
-        PATHS ${CMAKE_CURRENT_SOURCE_DIR}/volk/include
-        NO_DEFAULT_PATH
-        NO_CMAKE_FIND_ROOT_PATH
-    )
-
-    if(NOT INTREE_VOLK_FOUND)
-        message(STATUS "  VOLK submodule is not checked out.")
-        message(STATUS "  To check out the VOLK submodule, use:")
-        message(STATUS "    git pull --recurse-submodules=on")
-        message(STATUS "    git submodule update")
-        if(ENABLE_INTERNAL_VOLK)
-            message(STATUS "  External VOLK disabled.")
-        endif()
-        message(STATUS "  Override with -DENABLE_INTERNAL_VOLK=ON/OFF")
-        message(STATUS "")
-        message(FATAL_ERROR "VOLK required but not found.")
-    endif()
-
-    add_subdirectory(volk)
-    # if the above command returns, then VOLK is enabled
-
-    include(GrComponent)
-    GR_REGISTER_COMPONENT("volk" ENABLE_VOLK)
-
-    set(VOLK_INCLUDE_DIRS
-        ${CMAKE_CURRENT_SOURCE_DIR}/volk/include
-        ${CMAKE_CURRENT_BINARY_DIR}/volk/include
-    )
-
-    set(VOLK_LIBRARIES volk)
-
-    if(ENABLE_VOLK)
-
-        include(GrPackage)
-        CPACK_SET(CPACK_COMPONENT_GROUP_VOLK_DESCRIPTION "Vector optimized library of kernels")
-
-        CPACK_COMPONENT("volk_runtime"
-            GROUP        "Volk"
-            DISPLAY_NAME "Runtime"
-            DESCRIPTION  "Dynamic link libraries"
-        )
-
-        CPACK_COMPONENT("volk_devel"
-            GROUP        "Volk"
-            DISPLAY_NAME "Development"
-            DESCRIPTION  "C++ headers, package config, import libraries"
-        )
-
-    endif(ENABLE_VOLK)
-else()
-    message(STATUS "  An external VOLK has been found and will be used for build.")
-    set(ENABLE_VOLK TRUE)
-endif(NOT VOLK_FOUND)
-
-message(STATUS "  Override with -DENABLE_INTERNAL_VOLK=ON/OFF")
+find_package(Volk REQUIRED)
+set(ENABLE_VOLK TRUE)
 
 # Handle gr_log enable/disable
 GR_LOGGING()
 
 ########################################################################
-# Distribute the README file
-########################################################################
-install(
-    FILES README README.hacking
-    DESTINATION ${GR_PKG_DOC_DIR}
-    COMPONENT "docs"
-)
-
-########################################################################
-# The following dependency libraries are needed by all gr modules:
-########################################################################
-list(APPEND GR_TEST_TARGET_DEPS volk gnuradio-runtime)
-list(APPEND GR_TEST_PYTHON_DIRS
-    ${CMAKE_BINARY_DIR}/gnuradio-runtime/python
-    ${CMAKE_SOURCE_DIR}/gnuradio-runtime/python
-    ${CMAKE_BINARY_DIR}/gnuradio-runtime/swig
-)
-
-# Note that above we put the binary gnuradio-runtime/python directory
-# before the source directory. This is due to a quirk with ControlPort
-# and how slice generates files and names. We want the QA and
-# installed code to import the same names, so we have to grab from the
-# binary directory first.
-
-########################################################################
 # Add subdirectories (in order of deps)
 ########################################################################
-add_subdirectory(docs)
+include(GrComponent)
 add_subdirectory(gnuradio-runtime)
-add_subdirectory(gr-blocks)
-add_subdirectory(grc)
-add_subdirectory(gr-fec)
-add_subdirectory(gr-fft)
-add_subdirectory(gr-filter)
-add_subdirectory(gr-analog)
-add_subdirectory(gr-digital)
-add_subdirectory(gr-dtv)
-add_subdirectory(gr-atsc)
-add_subdirectory(gr-audio)
-add_subdirectory(gr-comedi)
-add_subdirectory(gr-channels)
-add_subdirectory(gr-noaa)
-add_subdirectory(gr-pager)
-add_subdirectory(gr-qtgui)
-add_subdirectory(gr-trellis)
-add_subdirectory(gr-uhd)
-add_subdirectory(gr-utils)
-add_subdirectory(gr-video-sdl)
-add_subdirectory(gr-vocoder)
-add_subdirectory(gr-fcd)
-add_subdirectory(gr-wavelet)
-add_subdirectory(gr-wxgui)
-add_subdirectory(gr-zeromq)
-
-# Defining GR_CTRLPORT for gnuradio/config.h
-if(ENABLE_GR_CTRLPORT)
-  set(GR_CTRLPORT True)
-  add_definitions(-DGR_CTRLPORT)
-
-  if(CTRLPORT_BACKENDS GREATER 0)
-    set(GR_RPCSERVER_ENABLED True)
-
-    if(THRIFT_FOUND)
-      set(GR_RPCSERVER_THRIFT True)
-    endif(THRIFT_FOUND)
-  endif(CTRLPORT_BACKENDS GREATER 0)
-endif(ENABLE_GR_CTRLPORT)
-
-# Install our Cmake modules into $prefix/lib/cmake/gnuradio
-# See "Package Configuration Files" on page:
-#    http://www.cmake.org/Wiki/CMake/Tutorials/Packaging
-
-configure_file(
-  ${CMAKE_SOURCE_DIR}/cmake/Modules/GnuradioConfigVersion.cmake.in
-  ${CMAKE_BINARY_DIR}/cmake/Modules/GnuradioConfigVersion.cmake
-@ONLY)
-
-SET(cmake_configs
-  ${CMAKE_SOURCE_DIR}/cmake/Modules/GnuradioConfig.cmake
-  ${CMAKE_BINARY_DIR}/cmake/Modules/GnuradioConfigVersion.cmake
-)
-
-if(NOT CMAKE_MODULES_DIR)
-  set(CMAKE_MODULES_DIR lib${LIB_SUFFIX}/cmake)
-endif(NOT CMAKE_MODULES_DIR)
-
-# Install all other cmake files into same directory
-file(GLOB cmake_others "cmake/Modules/*.cmake")
-list(REMOVE_ITEM cmake_others
-    "${CMAKE_SOURCE_DIR}/cmake/Modules/FindGnuradio.cmake"
-)
-
-install(
-  FILES ${cmake_configs} ${cmake_others}
-  DESTINATION ${CMAKE_MODULES_DIR}/gnuradio
-  COMPONENT "runtime_devel"
-)
-
-#finalize cpack after subdirs processed
-include(GrPackage)
-CPACK_FINALIZE()
 
 ########################################################################
 # Print summary
@@ -475,9 +267,9 @@ configure_file(
 @ONLY)
 
 # Install config.h in include/gnuradio
-install(
-    FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/gnuradio-runtime/include/gnuradio/config.h
-    DESTINATION ${GR_INCLUDE_DIR}/gnuradio
-    COMPONENT "runtime_devel"
-)
+#install(
+    #FILES
+    #${CMAKE_CURRENT_BINARY_DIR}/gnuradio-runtime/include/gnuradio/config.h
+    #DESTINATION ${GR_INCLUDE_DIR}/gnuradio
+    #COMPONENT "runtime_devel"
+#)
