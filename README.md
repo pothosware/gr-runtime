@@ -1,4 +1,4 @@
-# GNU Radio runtime library + Pothos support
+# GNU Radio runtime + Pothos support
 
 This project contains a very minor fork of the GNU Radio runtime library
 to support using GNU Radio blocks within the Pothos framework and GUI.

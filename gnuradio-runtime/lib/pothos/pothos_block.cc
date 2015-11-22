@@ -91,6 +91,8 @@ public:
     ~GrPothosBlock(void);
     void __setNumInputs(size_t);
     void __setNumOutputs(size_t);
+    void __setInputAlias(const std::string &, const std::string &);
+    void __setOutputAlias(const std::string &, const std::string &);
     void activate(void);
     void deactivate(void);
     void work(void);
@@ -129,6 +131,8 @@ GrPothosBlock::GrPothosBlock(boost::shared_ptr<gr::block> block):
 
     Pothos::Block::registerCall(this, POTHOS_FCN_TUPLE(GrPothosBlock, __setNumInputs));
     Pothos::Block::registerCall(this, POTHOS_FCN_TUPLE(GrPothosBlock, __setNumOutputs));
+    Pothos::Block::registerCall(this, POTHOS_FCN_TUPLE(GrPothosBlock, __setInputAlias));
+    Pothos::Block::registerCall(this, POTHOS_FCN_TUPLE(GrPothosBlock, __setOutputAlias));
 
     //modified input signature so extractPothosBlock() can detect pothos enabled block
     auto new_input_signature = new extended_io_signature(d_input_signature);
@@ -158,6 +162,16 @@ void GrPothosBlock::__setNumOutputs(const size_t num)
         assert(not Pothos::Block::outputs().empty());
         Pothos::Block::setupInput(i, Pothos::Block::outputs().back()->dtype());
     }
+}
+
+void GrPothosBlock::__setInputAlias(const std::string &name, const std::string &alias)
+{
+    this->input(name)->setAlias(alias);
+}
+
+void GrPothosBlock::__setOutputAlias(const std::string &name, const std::string &alias)
+{
+    this->output(name)->setAlias(alias);
 }
 
 /***********************************************************************
