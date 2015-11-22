@@ -129,6 +129,21 @@ GrPothosBlock::GrPothosBlock(boost::shared_ptr<gr::block> block):
         Pothos::Block::setupOutput(i, inferDType(bytes, d_block->name(), false));
     }
 
+    pmt::pmt_t msg_ports_in = d_block->message_ports_in();
+    for (size_t i = 0; i < pmt::length(msg_ports_in); i++)
+    {
+        auto port_id = pmt::vector_ref(msg_ports_in, i);
+        if (pmt::symbol_to_string(port_id) == "system") continue; //ignore ubiquitous system port
+        this->setupInput(pmt::symbol_to_string(port_id));
+    }
+
+    pmt::pmt_t msg_ports_out = d_block->message_ports_out();
+    for (size_t i = 0; i < pmt::length(msg_ports_out); i++)
+    {
+        auto port_id = pmt::vector_ref(msg_ports_out, i);
+        this->setupOutput(pmt::symbol_to_string(port_id));
+    }
+
     Pothos::Block::registerCall(this, POTHOS_FCN_TUPLE(GrPothosBlock, __setNumInputs));
     Pothos::Block::registerCall(this, POTHOS_FCN_TUPLE(GrPothosBlock, __setNumOutputs));
     Pothos::Block::registerCall(this, POTHOS_FCN_TUPLE(GrPothosBlock, __setInputAlias));

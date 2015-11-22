@@ -101,15 +101,6 @@ namespace gr {
     }
     msg_queue[port_id] = msg_queue_t();
     msg_queue_ready[port_id] = boost::shared_ptr<boost::condition_variable>(new boost::condition_variable());
-    #ifdef POTHOS_SUPPORT
-    Pothos::Block *b = extractPothosBlock(this);
-    if (b != nullptr)
-    {
-        if (pmt::symbol_to_string(port_id) == "system") return; //ignore ubiquitous system port
-        b->setupInput(pmt::symbol_to_string(port_id));
-        return;
-    }
-    #endif
   }
 
   pmt::pmt_t
@@ -135,14 +126,6 @@ namespace gr {
       throw std::runtime_error("message_port_register_out: port already in use");
     }
     d_message_subscribers = pmt::dict_add(d_message_subscribers, port_id, pmt::PMT_NIL);
-    #ifdef POTHOS_SUPPORT
-    Pothos::Block *b = extractPothosBlock(this);
-    if (b != nullptr)
-    {
-        b->setupOutput(pmt::symbol_to_string(port_id));
-        return;
-    }
-    #endif
   }
 
   pmt::pmt_t
