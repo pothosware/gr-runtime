@@ -31,6 +31,10 @@ get_filename_component(PMT_SERIAL_TAGS_H
     ${CMAKE_CURRENT_BINARY_DIR}/../../include/pmt/pmt_serial_tags.h ABSOLUTE
 )
 
+#ensure that directory exists
+get_filename_component(PMT_SERIAL_TAGS_DIR ${PMT_SERIAL_TAGS_H} PATH)
+file(MAKE_DIRECTORY ${PMT_SERIAL_TAGS_DIR})
+
 add_custom_command(
     OUTPUT ${PMT_SERIAL_TAGS_H}
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/gen-serial-tags.py
