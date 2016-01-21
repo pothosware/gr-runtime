@@ -24,10 +24,6 @@
 #include "config.h"
 #endif
 
-#ifdef POTHOS_SUPPORT
-#include "pothos_support.h"
-#endif
-
 #include <gnuradio/basic_block.h>
 #include <gnuradio/block_registry.h>
 #include <gnuradio/logger.h>
@@ -146,15 +142,6 @@ namespace gr {
     if(!pmt::dict_has_key(d_message_subscribers, port_id)) {
       throw std::runtime_error("port does not exist");
     }
-
-    #ifdef POTHOS_SUPPORT
-    Pothos::Block *b = extractPothosBlock(this);
-    if (b != nullptr)
-    {
-        b->output(pmt::symbol_to_string(port_id))->postMessage(pmt_to_obj(msg));
-        return;
-    }
-    #endif
 
     pmt::pmt_t currlist = pmt::dict_ref(d_message_subscribers, port_id, pmt::PMT_NIL);
     // iterate through subscribers on port
