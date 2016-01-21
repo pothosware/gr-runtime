@@ -158,6 +158,46 @@ if(LINUX)
 endif()
 
 ########################################################################
+# Pothos support
+########################################################################
+message(STATUS "######################################################")
+message(STATUS "## Configuring Pothos support")
+message(STATUS "######################################################")
+find_package(Pothos CONFIG REQUIRED)
+
+message(STATUS "Pothos support enabled:")
+message(STATUS "Pothos_INCLUDE_DIRS: ${Pothos_INCLUDE_DIRS}")
+message(STATUS "Pothos_LIBRARIES: ${Pothos_LIBRARIES}")
+
+set(GR_POTHOS_SUPPORT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/pothos)
+add_definitions(-DPOTHOS_SUPPORT)
+if (MSVC)
+    #fix The C++ Standard Library forbids macroizing keywords
+    add_definitions(-D_XKEYCHECK_H)
+endif (MSVC)
+include_directories(${GR_POTHOS_SUPPORT_DIR})
+include_directories(${Pothos_INCLUDE_DIRS})
+list(APPEND gnuradio_runtime_libs ${Pothos_LIBRARIES})
+list(APPEND gnuradio_runtime_sources
+    ${GR_POTHOS_SUPPORT_DIR}/pothos_block.cc
+    ${GR_POTHOS_SUPPORT_DIR}/pothos_pmt_helper.cc
+    ${GR_POTHOS_SUPPORT_DIR}/pothos_block_executor.cc
+)
+#hide lots of warnings caused by logger on every file
+if (CMAKE_COMPILER_IS_GNUCXX)
+    add_definitions(-Wno-unused-parameter)
+endif()
+
+message(STATUS "")
+message(STATUS "")
+
+#causes registered components to list pothos
+GR_REGISTER_COMPONENT("pothos-support" ENABLE_POTHOS_SUPPORT
+  Pothos_FOUND
+  ENABLE_GNURADIO_RUNTIME
+)
+
+########################################################################
 # Add DLL resource file when using MSVC
 ########################################################################
 

@@ -25,25 +25,33 @@
 #endif
 
 #include <gnuradio/constants.h>
+#include <Pothos/System/Paths.hpp>
+#include <Poco/Path.h>
 
 namespace gr {
 
   const std::string
   prefix()
   {
-    return "@prefix@";
+    return Pothos::System::getRootPath();
   }
 
   const std::string
   sysconfdir()
   {
-    return "@SYSCONFDIR@";
+    if (prefix() == "/usr") return "/@GR_CONF_DIR@";
+    Poco::Path sysConfPath(prefix());
+    sysConfPath.append("@GR_CONF_DIR@");
+    return sysConfPath.toString();
   }
 
   const std::string
   prefsdir()
   {
-    return "@GR_PREFSDIR@";
+    Poco::Path sysPrefsPath(sysconfdir());
+    sysPrefsPath.append("gnuradio");
+    sysPrefsPath.append("conf.d");
+    return sysPrefsPath.toString();
   }
 
   const std::string
