@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2015 Free Software Foundation, Inc.
+ * Copyright 2014-2016 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -54,6 +54,8 @@ static Pothos::DType inferDType(const size_t ioSize, const std::string &name, co
     //grab data type suffix
     auto suffix = name.substr(lastUnder+1);
     if (suffix.empty()) return dtype;
+    if (suffix == "sink") return dtype;
+    if (suffix == "source") return dtype;
 
     //strip leading v (for vector)
     if (std::tolower(suffix.front()) == 'v') suffix = suffix.substr(1);
