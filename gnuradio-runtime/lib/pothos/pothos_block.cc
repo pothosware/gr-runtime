@@ -177,7 +177,7 @@ void GrPothosBlock::__setNumOutputs(const size_t num)
     for (size_t i = Pothos::Block::outputs().size(); i < num; i++)
     {
         assert(not Pothos::Block::outputs().empty());
-        Pothos::Block::setupInput(i, Pothos::Block::outputs().back()->dtype());
+        Pothos::Block::setupOutput(i, Pothos::Block::outputs().back()->dtype());
     }
 }
 
