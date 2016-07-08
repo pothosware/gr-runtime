@@ -116,18 +116,18 @@ GrPothosBlock::GrPothosBlock(boost::shared_ptr<gr::block> block):
     Pothos::Block::setName(d_block->name());
 
     auto d_input_signature = d_block->input_signature();
-    for (size_t i = 0; i < d_input_signature->sizeof_stream_items().size(); i++)
+    for (size_t i = 0; i < std::max<size_t>(d_input_signature->min_streams(), d_input_signature->sizeof_stream_items().size()); i++)
     {
         if (d_input_signature->max_streams() != gr::io_signature::IO_INFINITE and int(i) >= d_input_signature->max_streams()) break;
-        auto bytes = d_input_signature->sizeof_stream_items()[i];
+        auto bytes = d_input_signature->sizeof_stream_item(i);
         Pothos::Block::setupInput(i, inferDType(bytes, d_block->name(), true));
     }
 
     auto d_output_signature = d_block->output_signature();
-    for (size_t i = 0; i < d_output_signature->sizeof_stream_items().size(); i++)
+    for (size_t i = 0; i < std::max<size_t>(d_output_signature->min_streams(), d_output_signature->sizeof_stream_items().size()); i++)
     {
         if (d_output_signature->max_streams() != gr::io_signature::IO_INFINITE and int(i) >= d_output_signature->max_streams()) break;
-        auto bytes = d_output_signature->sizeof_stream_items()[i];
+        auto bytes = d_output_signature->sizeof_stream_item(i);
         Pothos::Block::setupOutput(i, inferDType(bytes, d_block->name(), false));
     }
 
