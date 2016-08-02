@@ -283,5 +283,5 @@ pothos_static_block(pothosObjectRegisterPMTSupport)
     Pothos::PluginRegistry::add("/object/convert/gr/long_to_pmt", Pothos::Callable(&pmt::from_long));
     Pothos::PluginRegistry::add("/object/convert/gr/uint64_to_pmt", Pothos::Callable(&pmt::from_uint64));
     Pothos::PluginRegistry::add("/object/convert/gr/double_to_pmt", Pothos::Callable(&pmt::from_double));
-    Pothos::PluginRegistry::add("/object/convert/gr/complex_to_pmt", Pothos::Callable::make<const std::complex<double> &>(&pmt::from_complex));
+    Pothos::PluginRegistry::add("/object/convert/gr/complex_to_pmt", Pothos::Callable::make<pmt::pmt_t, const std::complex<double> &>(&pmt::from_complex));
 }

@@ -163,7 +163,7 @@ endif()
 message(STATUS "######################################################")
 message(STATUS "## Configuring Pothos support")
 message(STATUS "######################################################")
-find_package(Pothos CONFIG REQUIRED)
+find_package(Pothos "0.4.0" CONFIG REQUIRED)
 
 message(STATUS "Pothos support enabled:")
 message(STATUS "Pothos_INCLUDE_DIRS: ${Pothos_INCLUDE_DIRS}")

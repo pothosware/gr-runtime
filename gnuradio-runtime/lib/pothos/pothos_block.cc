@@ -29,7 +29,6 @@
 
 #include "pothos_block_executor.h"
 #include "pothos_support.h"
-#include <Pothos/Util/MathCompat.hpp>
 #include <cmath>
 #include <cassert>
 #include <cctype>
