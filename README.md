@@ -12,7 +12,7 @@ and it is possible to merge the fork back into the mainline GNU Radio
 
 ##Dependencies
 
-* A complete GNU Radio install (v3.7.9)
+* A complete GNU Radio install (v3.7.10.1)
 * The Pothos framework library
 
 ##Documentation
