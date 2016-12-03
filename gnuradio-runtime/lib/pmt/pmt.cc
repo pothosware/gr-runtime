@@ -63,9 +63,26 @@ pmt_base::operator delete(void *p, size_t size)
 
 #endif
 
+#if ((BOOST_VER_MAJOR >= 1) && (BOOST_VER_MINOR >= 53))
+void intrusive_ptr_add_ref(pmt_base* p)
+{
+  p->refcount_.fetch_add(1, boost::memory_order_relaxed);
+}
+
+void intrusive_ptr_release(pmt_base* p) {
+  if (p->refcount_.fetch_sub(1, boost::memory_order_release) == 1) {
+    boost::atomic_thread_fence(boost::memory_order_acquire);
+    delete p;
+  }
+}
+#else
+// boost::atomic not available before 1.53
+// This section will be removed when support for boost 1.48 ceases
+// NB: This code is prone to segfault on non-Intel architectures.
 void intrusive_ptr_add_ref(pmt_base* p) { ++(p->count_); }
 void intrusive_ptr_release(pmt_base* p) { if (--(p->count_) == 0 ) delete p; }
-
+#endif
+ 
 pmt_base::~pmt_base()
 {
   // nop -- out of line virtual destructor
@@ -281,7 +298,17 @@ string_to_symbol(const std::string &name)
     if (name == _symbol(sym)->name())
       return sym;		// Yes.  Return it
   }
-
+  
+  // Lock the table on insert for thread safety:
+  static boost::mutex thread_safety;
+  boost::mutex::scoped_lock lock(thread_safety);
+  // Re-do the search in case another thread inserted this symbol into the table
+  // before we got the lock
+  for (pmt_t sym = (*get_symbol_hash_table())[hash]; sym; sym = _symbol(sym)->next()){
+    if (name == _symbol(sym)->name())
+      return sym;		// Yes.  Return it
+  }
+  
   // Nope.  Make a new one.
   pmt_t sym = pmt_t(new pmt_symbol(name));
   _symbol(sym)->set_next((*get_symbol_hash_table())[hash]);
