@@ -64,16 +64,10 @@ namespace gr {
     return tmp_path();
   }
 
-  std::string __userconf_path()
+  const char *userconf_path()
   {
     boost::filesystem::path p(appdata_path());
     p = p / ".gnuradio";
-    return p.string();
-  }
-
-  const char *userconf_path()
-  {
-    static std::string p(__userconf_path());
     return p.c_str();
   }
 
