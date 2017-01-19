@@ -22,6 +22,8 @@ if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
     message(FATAL_ERROR "Prevented in-tree build. This is bad practice.")
 endif(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
 
+message(FATAL_ERROR "gr-runtime no longer needed. See https://github.com/pothosware/gr-pothos/wiki")
+
 ########################################################################
 # Project setup
 ########################################################################

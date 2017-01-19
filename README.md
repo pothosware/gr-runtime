@@ -1,5 +1,7 @@
 # GNU Radio runtime + Pothos support
 
+**Note:** This project is deprecated. See https://github.com/pothosware/gr-pothos/wiki
+
 This project contains a very minor fork of the GNU Radio runtime library
 to support using GNU Radio blocks within the Pothos framework and GUI.
 The gr-runtime fork provides an alternative gnuradio-runtime library
